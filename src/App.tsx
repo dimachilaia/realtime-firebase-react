@@ -1,5 +1,7 @@
+import Router from "./Router";
+
 function App() {
-  return <div>qwe</div>;
+  return <Router />;
 }
 
 export default App;
