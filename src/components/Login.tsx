@@ -14,7 +14,7 @@ const SignIn = () => {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      // navigate("/");
     } catch (error: any) {
       toast(error.code, { type: "error" });
     }

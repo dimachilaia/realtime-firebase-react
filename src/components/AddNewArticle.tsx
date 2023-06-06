@@ -11,6 +11,8 @@ import {
 } from "firebase/storage";
 import { toast } from "react-toastify";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { Link } from "react-router-dom";
+import SignIn from "./Login";
 
 interface ArticlesData {
   title: string;
@@ -86,7 +88,15 @@ const AddNewArticle = () => {
   return (
     <div>
       {!user ? (
-        <p>no user</p>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <SignIn />
+          <span>
+            Don't you have an account ?
+            <Link to="sign-up" className="ml-2">
+              Sign Up
+            </Link>
+          </span>
+        </div>
       ) : (
         <div className="container">
           <h1>Add New Article</h1>

@@ -35,7 +35,7 @@ const SignUp = () => {
         />
       </div>
 
-      {/* enail */}
+      {/* email */}
       <div className="form-group">
         <label>Email</label>
         <input
@@ -70,30 +70,4 @@ const SignUpContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const SignUpTitle = styled.h2`
-  font-size: 24px;
-  margin-bottom: 16px;
-`;
-
-const SignUpForm = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const SignUpInput = styled.input`
-  padding: 8px;
-  margin-bottom: 8px;
-`;
-
-const SignUpButton = styled.button`
-  padding: 8px 16px;
-  background-color: #f0f0f0;
-  border: none;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #e0e0e0;
-  }
 `;
