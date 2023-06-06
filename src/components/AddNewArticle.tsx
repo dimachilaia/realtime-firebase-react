@@ -194,8 +194,3 @@ const AddNewArticle = () => {
 };
 
 export default AddNewArticle;
-
-const Article = styled.div`
-  /* width: 50%; */
-  /* margin: auto; */
-`;
