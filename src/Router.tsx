@@ -6,6 +6,7 @@ import AddNewArticle from "./components/AddNewArticle";
 import SignIn from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import SignUp from "./components/SignUp";
+import NewArticle from "./components/NewArticle";
 
 export default function Router() {
   return (
@@ -15,9 +16,8 @@ export default function Router() {
         <ToastContainer />
         <Routes>
           <Route path="/" element={<Header />} />
-
-          <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/article/:id" element={<NewArticle />} />
         </Routes>
         <Routes>
           <Route path="/" element={<Articles />} />

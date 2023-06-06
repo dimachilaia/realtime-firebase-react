@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Link } from "react-router-dom";
 import SignIn from "./Login";
+import SignUp from "./SignUp";
 
 interface ArticlesData {
   title: string;
@@ -24,6 +25,7 @@ interface ArticlesData {
 const AddNewArticle = () => {
   const [progressIndicator, setProgressIndicator] = useState(0);
   const [user] = useAuthState(auth);
+  const [showSignUp, setShowSignUp] = useState(false);
 
   const [articlesData, setArticlesData] = useState<ArticlesData>({
     title: "",
@@ -89,12 +91,15 @@ const AddNewArticle = () => {
     <div>
       {!user ? (
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <SignIn />
-          <span>
+          {showSignUp ? <SignUp /> : <SignIn />}
+          <span className="ml-3">
             Don't you have an account ?
-            <Link to="sign-up" className="ml-2">
-              Sign Up
-            </Link>
+            <button
+              className="ml-2 btn btn-outline-primary"
+              onClick={() => setShowSignUp(!showSignUp)}
+            >
+              {showSignUp ? "Sign Up" : "Sign In"}
+            </button>
           </span>
         </div>
       ) : (

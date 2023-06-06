@@ -41,7 +41,6 @@ const LikeArticle = ({ id, likes }: any) => {
         }}
         onClick={handleLike}
       />
-      {/* <button>dimavar</button> */}
     </div>
   );
 };

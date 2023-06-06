@@ -11,7 +11,8 @@ const SignIn = () => {
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
       // navigate("/");
@@ -19,23 +20,32 @@ const SignIn = () => {
       toast(error.code, { type: "error" });
     }
   };
+
   return (
     <SignInContainer>
-      <SignInTitle>Sign In</SignInTitle>
+      <h3>Sign In</h3>
       <SignInForm>
-        <SignInInput
-          type="email"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <SignInInput
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <SignInButton type="submit" onClick={handleLogin}>
+        <div className="form-group">
+          <label>Email:</label>
+          <SignInInput
+            type="email"
+            className="form-control"
+            placeholder="Enter email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Password:</label>
+          <SignInInput
+            type="password"
+            className="form-control"
+            placeholder="Enter password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button className="btn btn-primary btn-block" onClick={handleLogin}>
           Sign In
-        </SignInButton>
+        </button>
       </SignInForm>
     </SignInContainer>
   );
@@ -47,11 +57,13 @@ const SignInContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const SignInTitle = styled.h2`
-  font-size: 24px;
-  margin-bottom: 16px;
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 50px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const SignInForm = styled.form`

@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import React, { useState } from "react";
-import { styled } from "styled-components";
+import styled from "styled-components";
 import { auth } from "../firebaseConfig";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -24,9 +24,9 @@ const SignUp = () => {
 
   return (
     <SignUpContainer>
-      <h1>Register</h1>
+      <h3>Register</h3>
       <div className="form-group">
-        <label>Name</label>
+        <label>Name:</label>
         <input
           className="form-control"
           placeholder="Enter your name"
@@ -35,9 +35,8 @@ const SignUp = () => {
         />
       </div>
 
-      {/* email */}
       <div className="form-group">
-        <label>Email</label>
+        <label>Email:</label>
         <input
           className="form-control"
           placeholder="Enter your email"
@@ -46,9 +45,8 @@ const SignUp = () => {
         />
       </div>
 
-      {/* password */}
       <div className="form-group">
-        <label>Password</label>
+        <label>Password:</label>
         <input
           className="form-control"
           placeholder="Enter your password"
@@ -56,8 +54,8 @@ const SignUp = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      <br />
-      <button className="btn btn-primary" onClick={handleSignUp}>
+
+      <button className="btn btn-primary btn-block mt-2" onClick={handleSignUp}>
         Register
       </button>
     </SignUpContainer>
@@ -70,4 +68,11 @@ const SignUpContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 50px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
