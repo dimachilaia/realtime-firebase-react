@@ -7,9 +7,13 @@ import EmailIcon from "@mui/icons-material/Email";
 import { Link, useNavigate } from "react-router-dom";
 import Face6Icon from "@mui/icons-material/Face6";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebaseConfig";
+import { signOut } from "firebase/auth";
 
 const Header = () => {
   const [isInputVisible, setIsInputVisible] = useState(false);
+  const [user] = useAuthState(auth);
 
   return (
     <HeaderContainer>
@@ -52,7 +56,15 @@ const Header = () => {
               <Face6Icon />
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item>Log Out</Dropdown.Item>
+              {user && (
+                <Dropdown.Item
+                  onClick={() => {
+                    signOut(auth);
+                  }}
+                >
+                  Log Out
+                </Dropdown.Item>
+              )}
             </Dropdown.Menu>
           </Dropdown>
         </Icons>

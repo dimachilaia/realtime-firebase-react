@@ -1,3 +1,7 @@
+import React, { useState, useEffect } from "react";
+import { auth, db, storage } from "../firebaseConfig";
+import { toast } from "react-toastify";
+import styled from "styled-components";
 import {
   collection,
   onSnapshot,
@@ -8,16 +12,13 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
-import { db, storage } from "../firebaseConfig";
-import styled from "styled-components";
-import { toast } from "react-toastify";
-import { ref } from "firebase/storage";
 import AddNewArticle from "./AddNewArticle";
-
+import { ref } from "firebase/storage";
+import { useAuthState } from "react-firebase-hooks/auth";
+import LikeArticle from "./Liked";
 interface Article {
   id?: string;
-  createdAt: number;
+  createdAt: any;
   title: string;
   description: string;
   image: string;
@@ -29,6 +30,7 @@ interface Article {
 
 const Articles: React.FC = () => {
   const [myArticles, setMyArticles] = useState<Article[]>([]);
+  const [user] = useAuthState(auth);
 
   useEffect(() => {
     const ref = collection(db, "Articles");
@@ -53,54 +55,92 @@ const Articles: React.FC = () => {
       toast("Your Article deleted successfully", { type: "success" });
       const storageRef = ref(storage, image);
     } catch (error) {
-      toast("You can not delete Article...", { type: "error" });
+      toast("You cannot delete the article...", { type: "error" });
     }
   };
 
   return (
-    <div>
-      {/* {myArticles.length === 0 ? (
-        <h4>Articles not found!</h4>
-      ) : ( */}
-      <div>
+    <Container>
+      <ArticlesList>
         {myArticles.map(
-          ({ id, title, description, image, createdBy, likes }) => (
+          ({
+            id,
+            title,
+            description,
+            image,
+            createdBy,
+            likes,
+            createdAt,
+            userId,
+            comments,
+          }) => (
             <ArticleContainer key={id}>
               <ArticleImage src={image} alt="Article Image" />
+
               <ArticleDetails>
+                {user && user.uid === userId && (
+                  <div>
+                    <i
+                      onClick={() => handleDelete(id, image)}
+                      className="fa fa-times"
+                      style={{ cursor: "pointer" }}
+                    />
+                  </div>
+                )}
+
                 <ArticleTitle>{title}</ArticleTitle>
                 <ArticleDescription>{description}</ArticleDescription>
                 <ArticleAuthor>Created By: {createdBy}</ArticleAuthor>
+                <ArticleDescription>
+                  {createdAt.toDate().toDateString()}
+                </ArticleDescription>
                 <ArticleLikes>Likes: {likes?.length}</ArticleLikes>
-                <div>
-                  <i
-                    onClick={() => handleDelete(id, image)}
-                    className="fa fa-times"
-                    style={{ cursor: "pointer" }}
-                  />
-                </div>
+                <ArticleLikes>Comments: {comments?.length}</ArticleLikes>
               </ArticleDetails>
+              {user && <LikeArticle id={id} likes={likes} />}
             </ArticleContainer>
           )
         )}
+      </ArticlesList>
+      <AddNewArticleWrapper>
         <AddNewArticle />
-      </div>
-      {/* )} */}
-    </div>
+      </AddNewArticleWrapper>
+    </Container>
   );
 };
 
 export default Articles;
+
+const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto;
+`;
+
+const AddNewArticleWrapper = styled.div`
+  padding: 20px;
+`;
+
+const ArticlesList = styled.div`
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
 const ArticleContainer = styled.div`
   display: flex;
+  gap: 30px;
   align-items: center;
   justify-content: center;
 `;
 
 const ArticleImage = styled.img`
-  width: 300px;
-  height: 300px;
-  object-fit: cover;
+  width: 59%;
+  height: 30vh;
 `;
 
 const ArticleDetails = styled.div`
