@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import LikeArticle from "./Liked";
+import Comments from "./Comments";
 
 const NewArticle = () => {
   const { id }: any = useParams();
@@ -32,14 +33,20 @@ const NewArticle = () => {
             </div>
           </div>
           <div className="col-md-9">
-            <h2 className="mt-3">Title: {article.title}</h2>
+            <div className="mt-3">
+              Title:
+              <span style={{ color: "blue", fontSize: "27px" }}>
+                {article.title}
+              </span>
+            </div>
             <p>Description: {article.description}</p>
             <div className="d-flex flex-row-reverse">
               {user && <LikeArticle id={id} likes={article.likes} />}
               <div className="pe-2">
                 <p>{article.likes.length}</p>
               </div>
-            </div>{" "}
+            </div>
+            <Comments articleId={id} />
           </div>
         </div>
       )}
