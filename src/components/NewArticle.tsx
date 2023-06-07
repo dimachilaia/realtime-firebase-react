@@ -1,6 +1,6 @@
 import { doc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { auth, db } from "../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import LikeArticle from "./Liked";
@@ -10,6 +10,7 @@ const NewArticle = () => {
   const { id }: any = useParams();
   const [article, setArticle] = useState<any>(null);
   const [user] = useAuthState(auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const docRef = doc(db, "Articles", id);
@@ -33,6 +34,12 @@ const NewArticle = () => {
             </div>
           </div>
           <div className="col-md-9">
+            <button
+              className="btn btn-danger mt-3"
+              onClick={() => navigate(-1)}
+            >
+              Go Back
+            </button>
             <div className="mt-3">
               Title:
               <span style={{ color: "blue", fontSize: "27px" }}>

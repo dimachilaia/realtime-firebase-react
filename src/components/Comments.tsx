@@ -11,11 +11,13 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 const Comments = ({ articleId }: { articleId: string }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [loggedUser]: any = useAuthState(auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const docRef = doc(db, "Articles", articleId);
@@ -47,7 +49,6 @@ const Comments = ({ articleId }: { articleId: string }) => {
       (comment: any) => comment.id === commentId
     );
 
-    // Check if the comment exists and if the logged-in user is the author
     if (
       commentToDelete &&
       commentToDelete.userName === loggedUser.displayName
@@ -65,7 +66,7 @@ const Comments = ({ articleId }: { articleId: string }) => {
       {comments !== null &&
         comments.map((comment: any) => {
           const isCurrentUserAuthor =
-            comment.userName === loggedUser.displayName;
+            comment.userName == loggedUser.displayName;
 
           return (
             <div key={comment.id} className="comment card mb-3">

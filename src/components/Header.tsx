@@ -80,6 +80,7 @@ const HeaderContainer = styled.div`
   background-color: #f2f2f2;
   position: sticky;
   top: 0;
+  z-index: 1;
   padding: 20px;
   display: flex;
   justify-content: space-evenly;
