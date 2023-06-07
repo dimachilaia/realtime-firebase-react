@@ -90,21 +90,24 @@ const AddNewArticle = () => {
   return (
     <div>
       {!user ? (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div>
           {showSignUp ? <SignUp /> : <SignIn />}
-          <span className="ml-3">
+          <div
+            className="ml-3"
+            style={{ display: "flex", alignItems: "center", gap: "15px" }}
+          >
             Don't you have an account ?
             <button
-              className="ml-2 btn btn-outline-primary"
+              className="ml-2 mt-2 btn btn-primary"
               onClick={() => setShowSignUp(!showSignUp)}
             >
-              {showSignUp ? "Sign Up" : "Sign In"}
+              {showSignUp ? "Sign In" : "Sign Up"}
             </button>
-          </span>
+          </div>
         </div>
       ) : (
         <div className="container">
-          <h1>Add New Article</h1>
+          <h3 style={{ color: "red" }}>Add New Post...</h3>
 
           <div className="mb-3">
             <label htmlFor="title" className="form-label">

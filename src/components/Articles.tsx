@@ -16,6 +16,8 @@ import AddNewArticle from "./AddNewArticle";
 import { ref } from "firebase/storage";
 import { useAuthState } from "react-firebase-hooks/auth";
 import LikeArticle from "./Liked";
+import { Link } from "react-router-dom";
+
 interface Article {
   id?: string;
   createdAt: any;
@@ -50,12 +52,14 @@ const Articles: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: any, image: any) => {
-    try {
-      await deleteDoc(doc(db, "Articles", id));
-      toast("Your Article deleted successfully", { type: "success" });
-      const storageRef = ref(storage, image);
-    } catch (error) {
-      toast("You cannot delete the article...", { type: "error" });
+    if (window.confirm("Are you sure you want to delete this article?")) {
+      try {
+        await deleteDoc(doc(db, "Articles", id));
+        toast("Your Article deleted successfully", { type: "success" });
+        const storageRef = ref(storage, image);
+      } catch (error) {
+        toast("You cannot delete the article...", { type: "error" });
+      }
     }
   };
 
@@ -75,24 +79,22 @@ const Articles: React.FC = () => {
             comments,
           }) => (
             <ArticleContainer key={id}>
-              <ArticleImage src={image} alt="Article Image" />
-
+              <ArticleImageContainer>
+                <Link to={`/article/${id}`}>
+                  <ArticleImage src={image} alt="Article Image" />
+                </Link>
+              </ArticleImageContainer>
               <ArticleDetails>
                 {user && user.uid === userId && (
-                  <div>
-                    <i
-                      onClick={() => handleDelete(id, image)}
-                      className="fa fa-times"
-                      style={{ cursor: "pointer" }}
-                    />
-                  </div>
+                  <DeleteButton onClick={() => handleDelete(id, image)}>
+                    Delete
+                  </DeleteButton>
                 )}
-
                 <ArticleTitle>{title}</ArticleTitle>
                 <ArticleDescription>{description}</ArticleDescription>
                 <ArticleAuthor>Created By: {createdBy}</ArticleAuthor>
                 <ArticleDescription>
-                  {createdAt.toDate().toDateString()}
+                  Date: {createdAt.toDate().toDateString()}
                 </ArticleDescription>
                 <ArticleLikes>Likes: {likes?.length}</ArticleLikes>
                 <ArticleLikes>Comments: {comments?.length}</ArticleLikes>
@@ -113,39 +115,40 @@ export default Articles;
 
 const Container = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  flex-wrap: wrap;
-  /* justify-content: center; */
-  margin: 0 auto;
-`;
-
-const AddNewArticleWrapper = styled.div`
-  padding: 20px;
+  justify-content: center;
+  margin: 30px auto;
+  flex-wrap: wrap-reverse;
 `;
 
 const ArticlesList = styled.div`
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
 `;
 
 const ArticleContainer = styled.div`
   display: flex;
-  gap: 30px;
   align-items: center;
-  justify-content: center;
+  gap: 30px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #f8f8f8;
+  position: relative;
+`;
+
+const ArticleImageContainer = styled.div`
+  flex: 0 0 180px;
 `;
 
 const ArticleImage = styled.img`
-  width: 59%;
-  height: 30vh;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
 `;
 
 const ArticleDetails = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 5px;
 `;
 
 const ArticleTitle = styled.h2`
@@ -166,4 +169,21 @@ const ArticleAuthor = styled.p`
 const ArticleLikes = styled.p`
   font-size: 14px;
   margin-bottom: 5px;
+`;
+
+const DeleteButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+`;
+
+const AddNewArticleWrapper = styled.div`
+  padding: 20px;
 `;
