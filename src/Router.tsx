@@ -11,8 +11,9 @@ export default function Router() {
       <HashRouter>
         <GlobasStyle />
         <ToastContainer />
+        <Header />
         <Routes>
-          <Route path="/" element={<Header />} />
+          {/* <Route path="/" element={<Header />} /> */}
           <Route path="/article/:id" element={<NewArticle />} />
         </Routes>
         <Routes>

@@ -28,6 +28,7 @@ const Header = () => {
           </SearchIconContainer>
           <InputField placeholder="Search..." isInputVisible={isInputVisible} />
         </SearchInput>
+        {user && <h6>Welcome, {user.displayName || user.email}</h6>}
         <Icons>
           <Dropdown>
             <Dropdown.Toggle variant="secondary" id="email-dropdown">
