@@ -11,7 +11,7 @@ import {
   DocumentData,
 } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
 import styled from "styled-components";
 import { updateDoc } from "firebase/firestore";
 
@@ -28,6 +28,7 @@ const Chat = () => {
   const chatWindowRef = useRef<HTMLDivElement>(null);
   const [editingMessage, setEditingMessage] = useState<Message | null>(null);
   const [editedMessageContent, setEditedMessageContent] = useState("");
+  const [deleteMessage, setDeleteMessage] = useState<Message | null>(null);
 
   const messagesRef = collection(db, "messages");
   const handleEditMessage = (message: Message) => {
@@ -72,11 +73,18 @@ const Chat = () => {
     }
   };
 
-  const handleDeleteMessage = async (messageId: string) => {
-    try {
-      await deleteDoc(doc(db, "messages", messageId));
-    } catch (error) {
-      console.error("Error deleting message:", error);
+  const handleDeleteMessage = (message: Message) => {
+    setDeleteMessage(message);
+  };
+
+  const confirmDeleteMessage = async () => {
+    if (deleteMessage) {
+      try {
+        await deleteDoc(doc(db, "messages", deleteMessage.id));
+      } catch (error) {
+        console.error("Error deleting message:", error);
+      }
+      setDeleteMessage(null);
     }
   };
 
@@ -101,7 +109,7 @@ const Chat = () => {
                         variant="danger"
                         size="sm"
                         className="me-1 mt-2"
-                        onClick={() => handleDeleteMessage(message.id)}
+                        onClick={() => handleDeleteMessage(message)}
                       >
                         Delete
                       </Button>
@@ -138,6 +146,23 @@ const Chat = () => {
           Send
         </Button>
       </MessageInputContainer>
+      <Modal
+        show={deleteMessage !== null}
+        onHide={() => setDeleteMessage(null)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Message</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete the message?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setDeleteMessage(null)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDeleteMessage}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </ChatContainer>
   );
 };

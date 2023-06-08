@@ -20,6 +20,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import LikeArticle from "./Liked";
 import { Link } from "react-router-dom";
 import Loading from "./Loading/Loading";
+import { Modal, Button } from "react-bootstrap";
 
 interface Article {
   id: string;
@@ -40,6 +41,13 @@ const Articles: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [lastArticleCreatedAt, setLastArticleCreatedAt] = useState<
     number | null
+  >(null);
+  const [deleteArticle, setDeleteArticle] = useState<
+    | {
+        id: string;
+        image: string;
+      }
+    | any
   >(null);
 
   const PAGE_SIZE = 3;
@@ -96,15 +104,14 @@ const Articles: React.FC = () => {
   };
 
   const handleDelete = async (id: string, image: string) => {
-    if (window.confirm("Are you sure you want to delete this article?")) {
-      try {
-        await deleteDoc(doc(db, "Articles", id));
-        toast("Your Article deleted successfully", { type: "success" });
-        const storageRef = ref(storage, image);
-      } catch (error) {
-        toast("You cannot delete the article...", { type: "error" });
-      }
+    try {
+      await deleteDoc(doc(db, "Articles", id));
+      toast("Your Article deleted successfully", { type: "success" });
+      const storageRef = ref(storage, image);
+    } catch (error) {
+      toast("You cannot delete the article...", { type: "error" });
     }
+    setDeleteArticle(null);
   };
 
   if (loading) return <Loading />;
@@ -132,7 +139,9 @@ const Articles: React.FC = () => {
                 </ArticleImageContainer>
                 <ArticleDetails>
                   {user && user.uid === userId && (
-                    <DeleteButton onClick={() => handleDelete(id, image)}>
+                    <DeleteButton
+                      onClick={() => setDeleteArticle({ id, image })}
+                    >
                       <i className="fa fa-times" />
                     </DeleteButton>
                   )}
@@ -169,6 +178,28 @@ const Articles: React.FC = () => {
           {loading && <span className="sr-only">Loading...</span>}
         </ButtonContainer>
       )}
+      <Modal
+        show={deleteArticle !== null}
+        onHide={() => setDeleteArticle(null)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Article</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete the article?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setDeleteArticle(null)}>
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() =>
+              handleDelete(deleteArticle?.id, deleteArticle?.image)
+            }
+          >
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

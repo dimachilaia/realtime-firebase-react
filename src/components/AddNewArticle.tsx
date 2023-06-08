@@ -96,7 +96,14 @@ const AddNewArticle = () => {
           {showSignUp ? <SignUp /> : <SignIn />}
           <div
             className="ml-3"
-            style={{ display: "flex", alignItems: "center", gap: "15px" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              justifyContent: "center",
+              margin: "10px auto",
+              width: "100%",
+            }}
           >
             Don't you have an account ?
             <button
