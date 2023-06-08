@@ -151,7 +151,7 @@ const Chat = () => {
                       <Button
                         variant="danger"
                         size="sm"
-                        className="me-2 mt-2"
+                        className="me-1 mt-2"
                         onClick={() => handleDeleteMessage(message.id)}
                       >
                         Delete
@@ -159,7 +159,7 @@ const Chat = () => {
                       <Button
                         disabled={editingMessage !== null}
                         variant="primary"
-                        className="ms-2 mt-2"
+                        className=" mt-2"
                         size="sm"
                         onClick={() => handleEditMessage(message)}
                       >
