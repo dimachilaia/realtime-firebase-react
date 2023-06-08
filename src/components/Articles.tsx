@@ -81,11 +81,7 @@ const Articles: React.FC = () => {
             <ArticleContainer key={id}>
               <ArticleImageContainer>
                 <Link to={`/article/${id}`}>
-                  <ArticleImage
-                    src={image}
-                    alt="Article Image"
-                    loading="lazy"
-                  />
+                  <ArticleImage src={image} alt="Article Image" />
                 </Link>
               </ArticleImageContainer>
               <ArticleDetails>

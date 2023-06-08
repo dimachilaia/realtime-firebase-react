@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import styled from "styled-components";
 import { auth } from "../firebaseConfig";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,10 +8,9 @@ import { toast } from "react-toastify";
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e: any) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -21,17 +20,26 @@ const SignIn = () => {
     }
   };
 
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
   return (
     <SignInContainer>
       <h3>Sign In</h3>
-      <SignInForm>
+      <SignInForm onSubmit={handleLogin}>
         <div className="form-group">
           <label>Email:</label>
           <SignInInput
             type="email"
             className="form-control"
             placeholder="Enter email"
-            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            onChange={handleEmailChange}
           />
         </div>
         <div className="form-group">
@@ -40,12 +48,11 @@ const SignIn = () => {
             type="password"
             className="form-control"
             placeholder="Enter password"
-            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            onChange={handlePasswordChange}
           />
         </div>
-        <button className="btn btn-primary btn-block" onClick={handleLogin}>
-          Sign In
-        </button>
+        <SignInButton type="submit">Sign In</SignInButton>
       </SignInForm>
     </SignInContainer>
   );

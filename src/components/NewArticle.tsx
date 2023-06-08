@@ -42,9 +42,7 @@ const NewArticle = () => {
             </button>
             <div className="mt-3">
               Title:
-              <span style={{ color: "blue", fontSize: "27px" }}>
-                {article.title}
-              </span>
+              {article.title}
             </div>
             <p>Description: {article.description}</p>
             <div className="d-flex flex-row-reverse">

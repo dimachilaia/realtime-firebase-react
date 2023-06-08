@@ -1,5 +1,9 @@
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import React, { useState } from "react";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  User,
+} from "firebase/auth";
+import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { auth } from "../firebaseConfig";
 import { toast } from "react-toastify";
@@ -13,13 +17,31 @@ const SignUp = () => {
 
   const handleSignUp = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      //@ts-ignore
-      updateProfile(auth.currentUser, { displayName: name });
-      navigate("/");
-    } catch (error: any) {
-      toast(error.code, { type: "error" });
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user: User | null = userCredential.user;
+      if (user) {
+        await updateProfile(user, { displayName: name });
+      }
+    } catch (error) {
+      const errorCode = (error as any).code;
+      toast(errorCode, { type: "error" });
     }
+  };
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
   };
 
   return (
@@ -31,7 +53,7 @@ const SignUp = () => {
           className="form-control"
           placeholder="Enter your name"
           type="text"
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleNameChange}
         />
       </div>
 
@@ -41,7 +63,7 @@ const SignUp = () => {
           className="form-control"
           placeholder="Enter your email"
           type="email"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleEmailChange}
         />
       </div>
 
@@ -51,7 +73,7 @@ const SignUp = () => {
           className="form-control"
           placeholder="Enter your password"
           type="password"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handlePasswordChange}
         />
       </div>
 
