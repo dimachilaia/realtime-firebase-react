@@ -5,19 +5,25 @@ import { auth, db } from "../firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import LikeArticle from "./Liked";
 import Comments from "./Comments";
+import Loading from "./Loading/Loading";
 
 const NewArticle = () => {
   const { id }: any = useParams();
   const [article, setArticle] = useState<any>(null);
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
+  const [loadingArticle, setLoadingArticle] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoadingArticle(true);
     const docRef = doc(db, "Articles", id);
     onSnapshot(docRef, (snapshot) => {
       setArticle({ ...snapshot.data(), id: snapshot.id });
+      setLoadingArticle(false);
     });
   }, []);
+
+  if (loading || loadingArticle) return <Loading />;
 
   return (
     <div className="container border bg-light" style={{ marginTop: "70px" }}>

@@ -14,6 +14,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { Link } from "react-router-dom";
 import SignIn from "./Login";
 import SignUp from "./SignUp";
+import Loading from "./Loading/Loading";
 
 interface ArticlesData {
   title: string;
@@ -24,9 +25,8 @@ interface ArticlesData {
 
 const AddNewArticle = () => {
   const [progressIndicator, setProgressIndicator] = useState(0);
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const [showSignUp, setShowSignUp] = useState(false);
-
   const [articlesData, setArticlesData] = useState<ArticlesData>({
     title: "",
     image: null,
@@ -86,6 +86,8 @@ const AddNewArticle = () => {
       }
     );
   };
+
+  if (loading) return <Loading />;
 
   return (
     <div>
