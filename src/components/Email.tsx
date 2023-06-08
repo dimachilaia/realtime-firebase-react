@@ -139,7 +139,7 @@ const Chat = () => {
               <Message
                 key={message.id}
                 isCurrentUser={message.user === auth.currentUser?.displayName}
-                onDoubleClick={() => handleEditMessage(message)}
+                // onDoubleClick={() => handleEditMessage(message)}
               >
                 <MessageContent
                   isCurrentUser={message.user === auth.currentUser?.displayName}
@@ -148,13 +148,22 @@ const Chat = () => {
                   {message.text}
                   {message.user === auth.currentUser?.displayName && (
                     <div>
-                      <Tooltip>Double-click to edit</Tooltip>
                       <Button
                         variant="danger"
                         size="sm"
+                        className="me-2 mt-2"
                         onClick={() => handleDeleteMessage(message.id)}
                       >
                         Delete
+                      </Button>
+                      <Button
+                        disabled={editingMessage !== null}
+                        variant="primary"
+                        className="ms-2 mt-2"
+                        size="sm"
+                        onClick={() => handleEditMessage(message)}
+                      >
+                        Edit
                       </Button>
                     </div>
                   )}
