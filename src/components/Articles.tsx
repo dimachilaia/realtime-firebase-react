@@ -87,19 +87,21 @@ const Articles: React.FC = () => {
               <ArticleDetails>
                 {user && user.uid === userId && (
                   <DeleteButton onClick={() => handleDelete(id, image)}>
-                    Delete
+                    <i className="fa fa-times" />
                   </DeleteButton>
                 )}
                 <ArticleTitle>{title}</ArticleTitle>
                 <ArticleDescription>{description}</ArticleDescription>
-                <ArticleAuthor>Created By: {createdBy}</ArticleAuthor>
-                <ArticleDescription>
+                <ArticleCreatedBy>Created By: {createdBy}</ArticleCreatedBy>
+                <ArticleCreatedAt>
                   Date: {createdAt.toDate().toDateString()}
-                </ArticleDescription>
+                </ArticleCreatedAt>
                 <ArticleLikes>Likes: {likes?.length}</ArticleLikes>
-                <ArticleLikes>Comments: {comments?.length}</ArticleLikes>
+                <ArticleComments>Comments: {comments?.length}</ArticleComments>
               </ArticleDetails>
-              {user && <LikeArticle id={id} likes={likes} />}
+              <LikesContainer>
+                {user && <LikeArticle id={id} likes={likes} />}
+              </LikesContainer>
             </ArticleContainer>
           )
         )}
@@ -116,13 +118,18 @@ export default Articles;
 const Container = styled.div`
   display: flex;
   justify-content: center;
-  margin: 30px auto;
-  flex-wrap: wrap-reverse;
+  justify-content: space-evenly;
+  padding: 10px 20px;
+  /* gap: 100px; */
+  @media screen and (max-width: 768px) {
+    flex-wrap: wrap-reverse;
+  }
 `;
 
 const ArticlesList = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 15px;
 `;
 
 const ArticleContainer = styled.div`
@@ -141,7 +148,7 @@ const ArticleImageContainer = styled.div`
 
 const ArticleImage = styled.img`
   width: 100%;
-  height: 180px;
+  height: 250px;
   object-fit: cover;
 `;
 
@@ -161,12 +168,22 @@ const ArticleDescription = styled.p`
   margin-bottom: 5px;
 `;
 
-const ArticleAuthor = styled.p`
+const ArticleCreatedBy = styled.p`
+  font-size: 14px;
+  margin-bottom: 5px;
+`;
+
+const ArticleCreatedAt = styled.p`
   font-size: 14px;
   margin-bottom: 5px;
 `;
 
 const ArticleLikes = styled.p`
+  font-size: 14px;
+  margin-bottom: 5px;
+`;
+
+const ArticleComments = styled.p`
   font-size: 14px;
   margin-bottom: 5px;
 `;
@@ -182,6 +199,12 @@ const DeleteButton = styled.button`
   border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
+`;
+
+const LikesContainer = styled.div`
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
 `;
 
 const AddNewArticleWrapper = styled.div`

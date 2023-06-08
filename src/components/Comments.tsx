@@ -9,6 +9,7 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  Timestamp,
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
@@ -39,6 +40,7 @@ const Comments = ({ articleId }: { articleId: string }) => {
         id: comments.length + 1,
         comment: newComment,
         userName: loggedUser.displayName,
+        createdAt: Timestamp.now(),
       }),
     });
     setNewComment("");
@@ -66,17 +68,22 @@ const Comments = ({ articleId }: { articleId: string }) => {
       {comments !== null &&
         comments.map((comment: any) => {
           const isCurrentUserAuthor =
-            comment.userName == loggedUser.displayName;
+            comment.userName === loggedUser.displayName;
 
           return (
             <div key={comment.id} className="comment card mb-3">
               <div className="card-body">
                 <p className="card-text">{comment.comment}</p>
-              </div>
-              <div className="card-footer">
                 <p className="card-subtitle text-muted mb-0">
                   Author: {comment.userName}
                 </p>
+                <p className="card-subtitle text-muted mb-0">
+                  Posted on:{" "}
+                  {comment.createdAt &&
+                    comment.createdAt.toDate().toDateString()}
+                </p>
+              </div>
+              <div className="card-footer">
                 <button
                   className="btn btn-danger btn-sm"
                   onClick={() => handleCommentDelete(comment.id)}

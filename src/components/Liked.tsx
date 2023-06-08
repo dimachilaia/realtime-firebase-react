@@ -12,9 +12,7 @@ const LikeArticle = ({ id, likes }: any) => {
       updateDoc(likesRef, {
         likes: arrayRemove(user.uid),
       })
-        .then(() => {
-          console.log("unliked");
-        })
+        .then(() => {})
         .catch((e) => {
           console.log(e);
         });
@@ -22,9 +20,7 @@ const LikeArticle = ({ id, likes }: any) => {
       updateDoc(likesRef, {
         likes: arrayUnion(user.uid),
       })
-        .then(() => {
-          console.log("liked");
-        })
+        .then(() => {})
         .catch((e) => {
           console.log(e);
         });
