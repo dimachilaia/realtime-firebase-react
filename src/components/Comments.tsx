@@ -13,47 +13,67 @@ import {
 } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
+import { DocumentData } from "firebase/firestore";
 
-const Comments = ({ articleId }: { articleId: string }) => {
-  const [comments, setComments] = useState([]);
+type Comment = {
+  id: number;
+  comment: string;
+  userName: string;
+  createdAt: any;
+};
+
+type CommentData = {
+  comments: Comment[];
+};
+
+type Props = {
+  articleId: string;
+};
+
+const Comments: React.FC<Props> = ({ articleId }) => {
+  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
-  const [loggedUser]: any = useAuthState(auth);
+  const [loggedUser, loading] = useAuthState(auth);
   const navigate = useNavigate();
 
   useEffect(() => {
     const docRef = doc(db, "Articles", articleId);
     onSnapshot(docRef, (snapshot) => {
-      //@ts-ignore
-      setComments(snapshot.data().comments);
+      const data = snapshot.data() as CommentData;
+      setComments(data.comments);
     });
-  }, []);
+  }, [articleId]);
 
-  const handleCommentChange = (event: any) => {
+  const handleCommentChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setNewComment(event.target.value);
   };
 
-  const handleCommentSubmit = async (event: any) => {
+  const handleCommentSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
     const docRef = doc(db, "Articles", articleId);
     await updateDoc(docRef, {
       comments: arrayUnion({
         id: comments.length + 1,
         comment: newComment,
-        userName: loggedUser.displayName,
+        userName: loggedUser?.displayName || "",
         createdAt: Timestamp.now(),
       }),
     });
     setNewComment("");
   };
 
-  const handleCommentDelete = async (commentId: any) => {
-    const commentToDelete: any = comments.find(
-      (comment: any) => comment.id === commentId
+  const handleCommentDelete = async (commentId: number) => {
+    const commentToDelete = comments.find(
+      (comment) => comment.id === commentId
     );
 
     if (
       commentToDelete &&
-      commentToDelete.userName === loggedUser.displayName
+      commentToDelete.userName === loggedUser?.displayName
     ) {
       const docRef = doc(db, "Articles", articleId);
       await updateDoc(docRef, {
@@ -65,10 +85,10 @@ const Comments = ({ articleId }: { articleId: string }) => {
   return (
     <div className="comments">
       <h3 className="text-primary mb-4">Comments</h3>
-      {comments !== null &&
-        comments.map((comment: any) => {
+      {comments.length > 0 ? (
+        comments.map((comment) => {
           const isCurrentUserAuthor =
-            comment.userName === loggedUser.displayName;
+            comment.userName === loggedUser?.displayName;
 
           return (
             <div key={comment.id} className="comment card mb-3">
@@ -94,7 +114,10 @@ const Comments = ({ articleId }: { articleId: string }) => {
               </div>
             </div>
           );
-        })}
+        })
+      ) : (
+        <p>No comments yet.</p>
+      )}
       <form onSubmit={handleCommentSubmit}>
         <div className="form-group">
           <label htmlFor="commentInput">Your Comment</label>
@@ -107,7 +130,7 @@ const Comments = ({ articleId }: { articleId: string }) => {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary mt-2 mb-3">
           Submit
         </button>
       </form>

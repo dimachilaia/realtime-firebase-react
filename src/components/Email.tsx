@@ -8,81 +8,29 @@ import {
   orderBy,
   doc,
   deleteDoc,
+  DocumentData,
 } from "firebase/firestore";
 import { db, auth } from "../firebaseConfig";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import styled from "styled-components";
 import { updateDoc } from "firebase/firestore";
 
-const ChatContainer = styled(Container)`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ChatWindow = styled.div`
-  border: 1px solid #ccc;
-  width: 80%;
-  height: 60vh;
-  overflow-y: auto;
-  padding: 10px;
-`;
-
-const MessageInputContainer = styled(Form)`
-  width: 80%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #ccc;
-  border-top: none;
-`;
-
-const Message = styled.div<{ isCurrentUser: boolean }>`
-  display: flex;
-  justify-content: ${(props) =>
-    props.isCurrentUser ? "flex-end" : "flex-start"};
-  align-items: flex-start;
-  margin-bottom: 10px;
-  cursor: pointer; /* Add cursor pointer to indicate interactivity */
-`;
-
-const MessageContent = styled.div<{ isCurrentUser: boolean }>`
-  padding: 10px;
-  border-radius: 5px;
-  max-width: 60%;
-  word-break: break-word;
-  background-color: ${(props) => (props.isCurrentUser ? "#d4e6ff" : "#f0f0f0")};
-`;
-
-const MessageUser = styled.div`
-  font-weight: bold;
-  margin-bottom: 5px;
-`;
-
-const Tooltip = styled.div`
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 5px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-`;
+type Message = {
+  id: string;
+  text: string;
+  createdAt: any;
+  user: string;
+};
 
 const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const chatWindowRef = useRef<HTMLDivElement>(null);
-  const [editingMessage, setEditingMessage] = useState<any>(null);
+  const [editingMessage, setEditingMessage] = useState<Message | null>(null);
   const [editedMessageContent, setEditedMessageContent] = useState("");
 
   const messagesRef = collection(db, "messages");
-  const handleEditMessage = (message: any) => {
+  const handleEditMessage = (message: Message) => {
     setEditingMessage(message);
     setEditedMessageContent(message.text);
   };
@@ -90,9 +38,9 @@ const Chat = () => {
   useEffect(() => {
     const queryMessages = query(messagesRef, orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
-      const messages: any[] = [];
+      const messages: Message[] = [];
       snapshot.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
+        messages.push({ ...doc.data(), id: doc.id } as Message);
       });
       setMessages(messages.reverse());
     });
@@ -105,7 +53,7 @@ const Chat = () => {
     }
   }, [messages]);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingMessage) {
       await updateDoc(doc(db, "messages", editingMessage.id), {
@@ -123,13 +71,15 @@ const Chat = () => {
       setNewMessage("");
     }
   };
-  const handleDeleteMessage = async (messageId: any) => {
+
+  const handleDeleteMessage = async (messageId: string) => {
     try {
       await deleteDoc(doc(db, "messages", messageId));
     } catch (error) {
       console.error("Error deleting message:", error);
     }
   };
+
   return (
     <ChatContainer>
       <ChatWindow ref={chatWindowRef}>
@@ -139,7 +89,6 @@ const Chat = () => {
               <Message
                 key={message.id}
                 isCurrentUser={message.user === auth.currentUser?.displayName}
-                // onDoubleClick={() => handleEditMessage(message)}
               >
                 <MessageContent
                   isCurrentUser={message.user === auth.currentUser?.displayName}
@@ -194,3 +143,49 @@ const Chat = () => {
 };
 
 export default Chat;
+
+const ChatContainer = styled(Container)`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ChatWindow = styled.div`
+  border: 1px solid #ccc;
+  width: 80%;
+  height: 60vh;
+  overflow-y: auto;
+  padding: 10px;
+`;
+
+const MessageInputContainer = styled(Form)`
+  width: 80%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-top: none;
+`;
+
+const Message = styled.div<{ isCurrentUser: boolean }>`
+  display: flex;
+  justify-content: ${(props) =>
+    props.isCurrentUser ? "flex-end" : "flex-start"};
+  align-items: flex-start;
+  margin-bottom: 10px;
+  cursor: pointer;
+`;
+
+const MessageContent = styled.div<{ isCurrentUser: boolean }>`
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 60%;
+  word-break: break-word;
+  background-color: ${(props) => (props.isCurrentUser ? "#d4e6ff" : "#f0f0f0")};
+`;
+
+const MessageUser = styled.div`
+  font-weight: bold;
+  margin-bottom: 5px;
+`;

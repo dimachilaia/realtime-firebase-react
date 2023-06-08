@@ -19,14 +19,14 @@ import LikeArticle from "./Liked";
 import { Link } from "react-router-dom";
 
 interface Article {
-  id?: string;
+  id: string;
   createdAt: any;
   title: string;
   description: string;
   image: string;
   createdBy: string;
   userId: string;
-  likes: number[];
+  likes: any;
   comments: string[];
 }
 
@@ -35,14 +35,14 @@ const Articles: React.FC = () => {
   const [user] = useAuthState(auth);
 
   useEffect(() => {
-    const ref = collection(db, "Articles");
-    const q = query(ref, orderBy("createdAt", "desc"));
+    const articlesRef = collection(db, "Articles");
+    const q = query(articlesRef, orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const articlesInfo: Article[] = querySnapshot.docs.map(
         (item: DocumentSnapshot<DocumentData>) => ({
-          id: item.id,
           ...(item.data() as Article),
+          id: item.id,
         })
       );
       setMyArticles(articlesInfo);
@@ -51,7 +51,7 @@ const Articles: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const handleDelete = async (id: any, image: any) => {
+  const handleDelete = async (id: string, image: string) => {
     if (window.confirm("Are you sure you want to delete this article?")) {
       try {
         await deleteDoc(doc(db, "Articles", id));
@@ -81,7 +81,11 @@ const Articles: React.FC = () => {
             <ArticleContainer key={id}>
               <ArticleImageContainer>
                 <Link to={`/article/${id}`}>
-                  <ArticleImage src={image} alt="Article Image" />
+                  <ArticleImage
+                    src={image}
+                    alt="Article Image"
+                    loading="lazy"
+                  />
                 </Link>
               </ArticleImageContainer>
               <ArticleDetails>
@@ -120,7 +124,6 @@ const Container = styled.div`
   justify-content: center;
   justify-content: space-evenly;
   padding: 10px 20px;
-  /* gap: 100px; */
   @media screen and (max-width: 768px) {
     flex-wrap: wrap-reverse;
   }

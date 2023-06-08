@@ -14,7 +14,7 @@ const NewArticle = () => {
 
   useEffect(() => {
     const docRef = doc(db, "Articles", id);
-    onSnapshot(docRef, (snapshot: any) => {
+    onSnapshot(docRef, (snapshot) => {
       setArticle({ ...snapshot.data(), id: snapshot.id });
     });
   }, []);

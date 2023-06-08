@@ -1,14 +1,26 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebaseConfig";
-import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  updateDoc,
+  DocumentReference,
+} from "firebase/firestore";
 
-const LikeArticle = ({ id, likes }: any) => {
+// ...
+type LikeArticleProps = {
+  id: string;
+  likes: string[] | undefined;
+};
+
+const LikeArticle = ({ id, likes }: LikeArticleProps) => {
   const [user]: any = useAuthState(auth);
 
-  const likesRef = doc(db, "Articles", id);
+  const likesRef: DocumentReference = doc(db, "Articles", id);
 
   const handleLike = () => {
-    if (likes?.includes(user.uid)) {
+    if (user && likes?.includes(user.uid)) {
       updateDoc(likesRef, {
         likes: arrayRemove(user.uid),
       })
@@ -17,27 +29,31 @@ const LikeArticle = ({ id, likes }: any) => {
           console.log(e);
         });
     } else {
-      updateDoc(likesRef, {
-        likes: arrayUnion(user.uid),
-      })
-        .then(() => {})
-        .catch((e) => {
-          console.log(e);
-        });
+      if (user) {
+        updateDoc(likesRef, {
+          likes: arrayUnion(user.uid),
+        })
+          .then(() => {})
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     }
   };
   return (
     <div>
       <i
-        className={`fa fa-heart${!likes?.includes(user.uid) ? "-o" : ""} fa-lg`}
+        className={`fa fa-heart${
+          !likes?.includes(user?.uid) ? "-o" : ""
+        } fa-lg`}
         style={{
           cursor: "pointer",
-          //@ts-ignore
-          color: likes?.includes(user.uid) ? "red" : null,
+          color: likes?.includes(user?.uid) ? "red" : undefined,
         }}
         onClick={handleLike}
       />
     </div>
   );
 };
+
 export default LikeArticle;
