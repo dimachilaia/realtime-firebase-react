@@ -106,8 +106,7 @@ const Chat = () => {
   }, [chosenChat]);
 
   useEffect(() => {
-    //@ts-ignore
-    if (chatWindowRef.current && messagesRef.current) {
+    if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [chatWindowRef.current]);
@@ -165,6 +164,7 @@ const Chat = () => {
       setDeleteMessage(null);
     }
   };
+
   if (!user) {
     return (
       <LogInText>
@@ -173,6 +173,7 @@ const Chat = () => {
       </LogInText>
     );
   }
+
   return (
     <WholeContainer>
       <Users>
@@ -321,6 +322,7 @@ const Users = styled.div`
   justify-content: center;
   background-color: #f0f0f0;
   padding: 10px;
+  min-height: 100vh;
 `;
 
 const User = styled.div`
@@ -371,25 +373,24 @@ const Message = styled.div<{ isCurrentUser: boolean }>`
   display: flex;
   justify-content: ${(props) =>
     props.isCurrentUser ? "flex-end" : "flex-start"};
-  align-items: flex-start;
-  margin-bottom: 10px;
-  cursor: pointer;
+  margin-bottom: 8px;
 `;
 
 const MessageContent = styled.div<{ isCurrentUser: boolean }>`
-  padding: 10px;
-  border-radius: 5px;
+  background-color: ${(props) => (props.isCurrentUser ? "#dcf8c6" : "#eee")};
+  padding: 8px;
+  border-radius: 8px;
   max-width: 70%;
-  background-color: ${(props) => (props.isCurrentUser ? "#d4e6ff" : "#f0f0f0")};
 `;
 
 const MessageUser = styled.span`
   font-weight: bold;
-  margin-right: 5px;
+  margin-right: 8px;
 `;
-const LogInText = styled.h4`
-  color: red;
+
+const LogInText = styled.div`
   display: flex;
   justify-content: center;
-  margin: 50px auto;
+  align-items: center;
+  height: 100vh;
 `;
