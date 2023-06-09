@@ -30,15 +30,10 @@ const Header = () => {
         </SearchInput>
         {user && <h6>Welcome, {user.displayName || user.email}</h6>}
         <Icons>
-          <Dropdown>
+          <Dropdown as={Link} to="/email">
             <Dropdown.Toggle variant="secondary" id="email-dropdown">
               <EmailIcon />
             </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item as={Link} to="/email">
-                Email Dropdown Item
-              </Dropdown.Item>
-            </Dropdown.Menu>
           </Dropdown>
 
           <Dropdown>
