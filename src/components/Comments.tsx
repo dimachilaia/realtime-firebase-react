@@ -118,22 +118,25 @@ const Comments: React.FC<Props> = ({ articleId }) => {
       ) : (
         <p>No comments yet.</p>
       )}
-      <form onSubmit={handleCommentSubmit}>
-        <div className="form-group">
-          <label htmlFor="commentInput">Your Comment</label>
-          <textarea
-            id="commentInput"
-            className="form-control"
-            value={newComment}
-            onChange={handleCommentChange}
-            rows={4}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary mt-2 mb-3">
-          Submit
-        </button>
-      </form>
+
+      {loggedUser && (
+        <form onSubmit={handleCommentSubmit}>
+          <div className="form-group">
+            <label htmlFor="commentInput">Your Comment</label>
+            <textarea
+              id="commentInput"
+              className="form-control"
+              value={newComment}
+              onChange={handleCommentChange}
+              rows={4}
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary mt-2 mb-3">
+            Submit
+          </button>
+        </form>
+      )}
     </div>
   );
 };
