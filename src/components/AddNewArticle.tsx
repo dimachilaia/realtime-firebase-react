@@ -213,6 +213,7 @@ const AddNewArticle = ({ myArticles, setMyArticles }: Props) => {
                 !articlesData.description ||
                 !articlesData.image
               ) {
+                toast.error("All fields are required");
                 return;
               }
               uploadArticle();
