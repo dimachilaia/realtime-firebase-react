@@ -17,7 +17,7 @@ const Header = ({ setSearchQuery, searchQuery }: any) => {
 
   return (
     <HeaderContainer>
-      <Text to="/">SocialMedia</Text>
+      <Text to="/">SocialConnect</Text>
       <>
         <SearchInput>
           <SearchIconContainer
