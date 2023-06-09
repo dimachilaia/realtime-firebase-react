@@ -50,6 +50,7 @@ const Articles = ({ searchQuery }: { searchQuery: string }) => {
     number | null
   >(null);
   const [subscribed, setSubscribed] = useState(false);
+  const [hasMoreItems, setHasMoreItems] = useState(true);
 
   const PAGE_SIZE = 3;
 
@@ -106,6 +107,10 @@ const Articles = ({ searchQuery }: { searchQuery: string }) => {
     setMyArticles((prevArticles) => [...prevArticles, ...articlesInfo]);
     const lastArticle = querySnapshot.docs[querySnapshot.docs.length - 1];
     setLastArticleCreatedAt(lastArticle?.data().createdAt);
+
+    if (querySnapshot.docs.length < PAGE_SIZE) {
+      setHasMoreItems(false);
+    }
   };
 
   useEffect(() => {
@@ -216,7 +221,6 @@ const Articles = ({ searchQuery }: { searchQuery: string }) => {
           />
         </AddNewArticleWrapper>
       </Container>
-      {myArticles.length === 0 ? <p>No more items</p> : null}
       <Modal
         show={deleteArticle !== null}
         onHide={() => setDeleteArticle(null)}
@@ -240,6 +244,7 @@ const Articles = ({ searchQuery }: { searchQuery: string }) => {
         </Modal.Footer>
       </Modal>
       <ButtonContainer
+        style={{ display: hasMoreItems ? "block" : "none" }}
         className="btn btn-primary mb-3 mt-3 btn"
         onClick={fetchNextPage}
       >

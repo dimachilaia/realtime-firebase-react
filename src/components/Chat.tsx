@@ -121,7 +121,7 @@ const Chat = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage === "") return;
+    if (newMessage === "" && !editingMessage) return;
 
     if (chosenChat) {
       await addDoc(privateMessagesRef, {
@@ -130,7 +130,8 @@ const Chat = () => {
         users: [chosenChat?.id, user?.uid],
         sender: user?.uid,
       });
-      return setNewMessage("");
+      setNewMessage("");
+      return;
     }
 
     if (editingMessage) {
@@ -165,7 +166,12 @@ const Chat = () => {
     }
   };
   if (!user) {
-    return <LogInText>Please log in...</LogInText>;
+    return (
+      <LogInText>
+        Welcome to the Chat App! Please log in to communicate with registered
+        accounts.
+      </LogInText>
+    );
   }
   return (
     <WholeContainer>
@@ -194,7 +200,13 @@ const Chat = () => {
           })}
       </Users>
       <ChatContainer>
-        <h1>{chosenChat ? `Chat With ${chosenChat.name}` : "General Chat"}</h1>
+        <h5>
+          You are now logged in and can start conversations with other
+          registered users!
+        </h5>
+        <h3 style={{ color: "red" }}>
+          {chosenChat ? `Chat With ${chosenChat.name}` : "General Chat"}
+        </h3>
         <ChatWindow ref={chatWindowRef}>
           <div className="chat-messages">
             {auth.currentUser && !chosenChat

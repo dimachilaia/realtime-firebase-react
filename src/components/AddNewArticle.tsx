@@ -1,5 +1,5 @@
 import { Timestamp, addDoc, collection } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { auth, db, storage } from "../firebaseConfig";
 import {
   StorageReference,
@@ -37,7 +37,13 @@ const AddNewArticle = ({ myArticles, setMyArticles }: Props) => {
     description: "",
     createdAt: Timestamp.now().toDate(),
   });
-
+  useEffect(() => {
+    const successMessage = localStorage.getItem("successMessage");
+    if (successMessage) {
+      toast(successMessage, { type: "success" });
+      localStorage.removeItem("successMessage");
+    }
+  }, []);
   const uploadArticle = () => {
     const storageRef: StorageReference = ref(
       storage,
@@ -90,8 +96,10 @@ const AddNewArticle = ({ myArticles, setMyArticles }: Props) => {
               });
 
               setMyArticles(newArticles);
-              toast("Article Added Successfully", { type: "success" });
+              const successMessage = "Article Added Successfully";
+              localStorage.setItem("successMessage", successMessage);
               setProgressIndicator(0);
+              window.location.reload();
             })
             .catch((err) => {
               toast("Error adding article", { type: "error" });
