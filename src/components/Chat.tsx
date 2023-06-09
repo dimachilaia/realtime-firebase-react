@@ -168,6 +168,10 @@ const Chat = () => {
     }
   };
 
+  if (!user) {
+    return <LogInText>Please log in...</LogInText>;
+  }
+
   return (
     <WholeContainer>
       <Users>
@@ -296,7 +300,6 @@ const Chat = () => {
 };
 
 export default Chat;
-
 const WholeContainer = styled.div`
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -375,4 +378,11 @@ const MessageContent = styled.div<{ isCurrentUser: boolean }>`
 const MessageUser = styled.span`
   font-weight: bold;
   margin-right: 5px;
+`;
+
+const LogInText = styled.h4`
+  color: red;
+  display: flex;
+  justify-content: center;
+  margin: 50px auto;
 `;
