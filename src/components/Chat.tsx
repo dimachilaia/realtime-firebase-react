@@ -261,6 +261,7 @@ const Chat = () => {
                         {message.sender === user?.uid
                           ? user.displayName
                           : chosenChat?.name}
+                        :
                       </MessageUser>
                       {message.message}
                     </MessageContent>
@@ -313,6 +314,11 @@ const WholeContainer = styled.div`
   display: grid;
   grid-template-columns: 100px 1fr;
   gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px 1fr;
+  }
 `;
 
 const Users = styled.div`
@@ -323,6 +329,12 @@ const Users = styled.div`
   background-color: #f0f0f0;
   padding: 10px;
   min-height: 100vh;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    overflow-x: auto;
+    min-height: unset;
+  }
 `;
 
 const User = styled.div`
@@ -332,6 +344,7 @@ const User = styled.div`
   background-color: #fff;
   color: #000;
   transition: background-color 0.3s ease;
+  margin-bottom: 8px;
 
   &:hover {
     background-color: #e1e1e1;
@@ -341,6 +354,11 @@ const User = styled.div`
     background-color: #d4e6ff;
     font-weight: bold;
   }
+
+  @media (max-width: 768px) {
+    margin-right: 8px;
+    margin-bottom: 0;
+  }
 `;
 
 const ChatContainer = styled(Container)`
@@ -349,6 +367,11 @@ const ChatContainer = styled(Container)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    height: unset;
+    padding-top: 50px;
+  }
 `;
 
 const ChatWindow = styled.div`
@@ -357,6 +380,10 @@ const ChatWindow = styled.div`
   height: 60vh;
   overflow-y: auto;
   padding: 10px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const MessageInputContainer = styled(Form)`
@@ -367,6 +394,10 @@ const MessageInputContainer = styled(Form)`
   border-top: none;
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const Message = styled.div<{ isCurrentUser: boolean }>`
