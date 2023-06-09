@@ -86,6 +86,7 @@ const Chat = () => {
         privateMessagesRef,
         where("users", "array-contains", user?.uid)
       );
+
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const messages: PrivateMessage[] = [];
         snapshot.forEach((doc) => {
@@ -99,11 +100,6 @@ const Chat = () => {
         setPrivateMessages(
           messages.sort((a: any, b: any) => a.createdAt - b.createdAt)
         );
-        const chatWindowElement = chatWindowRef.current;
-        chatWindowElement?.scrollTo({
-          top: chatWindowElement?.scrollHeight,
-          behavior: "smooth",
-        });
       });
       return () => unsubscribe();
     }
@@ -117,8 +113,9 @@ const Chat = () => {
   }, [chatWindowRef.current]);
 
   useEffect(() => {
-    if (chatWindowRef.current) {
-      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    const chatWindowElement = chatWindowRef.current;
+    if (chatWindowElement) {
+      chatWindowElement.scrollTop = chatWindowElement.scrollHeight;
     }
   }, [messages, privateMessages]);
 
@@ -167,10 +164,6 @@ const Chat = () => {
       setDeleteMessage(null);
     }
   };
-
-  if (!user) {
-    return <LogInText>Please log in...</LogInText>;
-  }
 
   return (
     <WholeContainer>
@@ -300,6 +293,7 @@ const Chat = () => {
 };
 
 export default Chat;
+
 const WholeContainer = styled.div`
   display: grid;
   grid-template-columns: 100px 1fr;
@@ -378,11 +372,4 @@ const MessageContent = styled.div<{ isCurrentUser: boolean }>`
 const MessageUser = styled.span`
   font-weight: bold;
   margin-right: 5px;
-`;
-
-const LogInText = styled.h4`
-  color: red;
-  display: flex;
-  justify-content: center;
-  margin: 50px auto;
 `;

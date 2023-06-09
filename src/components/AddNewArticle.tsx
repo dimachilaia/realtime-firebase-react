@@ -1,6 +1,5 @@
 import { Timestamp, addDoc, collection } from "firebase/firestore";
-import React, { useState } from "react";
-import { styled } from "styled-components";
+import { useState } from "react";
 import { auth, db, storage } from "../firebaseConfig";
 import {
   StorageReference,
@@ -11,7 +10,6 @@ import {
 } from "firebase/storage";
 import { toast } from "react-toastify";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { Link } from "react-router-dom";
 import SignIn from "./Login";
 import SignUp from "./SignUp";
 import Loading from "./Loading/Loading";

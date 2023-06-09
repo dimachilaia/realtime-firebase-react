@@ -5,7 +5,7 @@ import Articles from "./components/Articles";
 import { ToastContainer } from "react-toastify";
 import NewArticle from "./components/NewArticle";
 import { useState } from "react";
-import Chat from "./components/Chat";
+import Email from "./components/Chat";
 
 export default function Router() {
   const [searchQuery, setSearchQuery] = useState<any>("");
@@ -19,7 +19,7 @@ export default function Router() {
         <Routes>
           {/* <Route path="/" element={<Header />} /> */}
           <Route path="/article/:id" element={<NewArticle />} />
-          <Route path="/email" element={<Chat />} />
+          <Route path="/email" element={<Email />} />
         </Routes>
         <Routes>
           <Route path="/" element={<Articles searchQuery={searchQuery} />} />
