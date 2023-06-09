@@ -3,9 +3,10 @@ import {
   updateProfile,
   User,
 } from "firebase/auth";
-import React, { ChangeEvent, useState } from "react";
+import { Timestamp, addDoc, collection } from "firebase/firestore";
+import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -24,7 +25,12 @@ const SignUp = () => {
       );
       const user: User | null = userCredential.user;
       if (user) {
+        const usersRef = collection(db, "users");
         await updateProfile(user, { displayName: name });
+        await addDoc(usersRef, {
+          id: user?.uid,
+          name: user.displayName,
+        });
       }
     } catch (error) {
       const errorCode = (error as any).code;

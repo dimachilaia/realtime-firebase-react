@@ -11,7 +11,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
 
-const Header = () => {
+const Header = ({ setSearchQuery, searchQuery }: any) => {
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [user] = useAuthState(auth);
 
@@ -26,7 +26,12 @@ const Header = () => {
           >
             <SearchIcon />
           </SearchIconContainer>
-          <InputField placeholder="Search..." isInputVisible={isInputVisible} />
+          <InputField
+            placeholder="Search by title..."
+            isInputVisible={isInputVisible}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </SearchInput>
         {user && <h6>Welcome, {user.displayName || user.email}</h6>}
         <Icons>
@@ -34,17 +39,6 @@ const Header = () => {
             <Dropdown.Toggle variant="secondary" id="email-dropdown">
               <EmailIcon />
             </Dropdown.Toggle>
-          </Dropdown>
-
-          <Dropdown>
-            <Dropdown.Toggle variant="secondary" id="notifications-dropdown">
-              <NotificationsIcon />
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item as={Link} to="/notifications">
-                Notifications Dropdown Item
-              </Dropdown.Item>
-            </Dropdown.Menu>
           </Dropdown>
 
           <Dropdown>
@@ -88,7 +82,7 @@ const HeaderContainer = styled.div`
 `;
 
 const Text = styled(Link)`
-  color: red;
+  color: #1100ff;
   outline: none;
   text-decoration: none;
   font-size: 24px;

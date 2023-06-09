@@ -7,14 +7,21 @@ import {
   updateDoc,
   DocumentReference,
 } from "firebase/firestore";
+import { Article } from "./Articles";
 
-// ...
 type LikeArticleProps = {
   id: string;
   likes: string[] | undefined;
+  myArticles?: Article[];
+  setMyArticles?: (articles: Article[]) => void;
 };
 
-const LikeArticle = ({ id, likes }: LikeArticleProps) => {
+const LikeArticle = ({
+  id,
+  likes,
+  myArticles,
+  setMyArticles,
+}: LikeArticleProps) => {
   const [user]: any = useAuthState(auth);
 
   const likesRef: DocumentReference = doc(db, "Articles", id);
@@ -24,7 +31,21 @@ const LikeArticle = ({ id, likes }: LikeArticleProps) => {
       updateDoc(likesRef, {
         likes: arrayRemove(user.uid),
       })
-        .then(() => {})
+        .then(() => {
+          if (!myArticles || !setMyArticles) return;
+          const updatedLikes = likes
+            ? likes.filter((like) => like !== user.uid)
+            : [];
+
+          const updatedArticles = [...myArticles].map((article) => {
+            if (article.id === id) {
+              article.likes = updatedLikes;
+            }
+            return article;
+          });
+
+          setMyArticles(updatedArticles);
+        })
         .catch((e) => {
           console.log(e);
         });
@@ -33,13 +54,25 @@ const LikeArticle = ({ id, likes }: LikeArticleProps) => {
         updateDoc(likesRef, {
           likes: arrayUnion(user.uid),
         })
-          .then(() => {})
+          .then(() => {
+            if (!myArticles || !setMyArticles) return;
+            const updatedLikes = likes ? [...likes, user.uid] : [user.uid];
+            const updatedArticles = [...myArticles].map((article) => {
+              if (article.id === id) {
+                article.likes = updatedLikes;
+              }
+              return article;
+            });
+
+            setMyArticles(updatedArticles);
+          })
           .catch((e) => {
             console.log(e);
           });
       }
     }
   };
+
   return (
     <div>
       <i

@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import SignIn from "./Login";
 import SignUp from "./SignUp";
 import Loading from "./Loading/Loading";
+import { Article } from "./Articles";
 
 interface ArticlesData {
   title: string;
@@ -23,7 +24,12 @@ interface ArticlesData {
   createdAt: Date;
 }
 
-const AddNewArticle = () => {
+interface Props {
+  myArticles: Article[];
+  setMyArticles: (articles: Article[]) => void;
+}
+
+const AddNewArticle = ({ myArticles, setMyArticles }: Props) => {
   const [progressIndicator, setProgressIndicator] = useState(0);
   const [user, loading] = useAuthState(auth);
   const [showSignUp, setShowSignUp] = useState(false);
@@ -65,17 +71,27 @@ const AddNewArticle = () => {
         });
         getDownloadURL(uploadImage.snapshot.ref).then((url) => {
           const articleRef = collection(db, "Articles");
-          addDoc(articleRef, {
+          const now = Timestamp.now();
+          const newArticle = {
             title: articlesData.title,
             description: articlesData.description,
             image: url,
-            createdAt: Timestamp.now().toDate(),
+            createdAt: now,
             createdBy: user?.displayName,
             userId: user?.uid,
             likes: [],
             comments: [],
-          })
+          };
+          addDoc(articleRef, newArticle)
             .then(() => {
+              const newArticles: any = [...myArticles];
+              newArticles.unshift({
+                ...newArticle,
+                id: newArticle.createdAt.toDate().toISOString(),
+                createdAt: now,
+              });
+
+              setMyArticles(newArticles);
               toast("Article Added Successfully", { type: "success" });
               setProgressIndicator(0);
             })
@@ -88,7 +104,6 @@ const AddNewArticle = () => {
   };
 
   if (loading) return <Loading />;
-
   return (
     <div>
       {!user ? (

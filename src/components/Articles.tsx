@@ -13,6 +13,7 @@ import {
   doc,
   limit,
   startAfter,
+  getDocs,
 } from "firebase/firestore";
 import AddNewArticle from "./AddNewArticle";
 import { ref } from "firebase/storage";
@@ -22,7 +23,7 @@ import { Link } from "react-router-dom";
 import Loading from "./Loading/Loading";
 import { Modal, Button } from "react-bootstrap";
 
-interface Article {
+export interface Article {
   id: string;
   createdAt: any;
   title: string;
@@ -34,14 +35,7 @@ interface Article {
   comments: string[];
 }
 
-const Articles: React.FC = () => {
-  const [myArticles, setMyArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [user] = useAuthState(auth);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [lastArticleCreatedAt, setLastArticleCreatedAt] = useState<
-    number | null
-  >(null);
+const Articles = ({ searchQuery }: { searchQuery: string }) => {
   const [deleteArticle, setDeleteArticle] = useState<
     | {
         id: string;
@@ -49,10 +43,17 @@ const Articles: React.FC = () => {
       }
     | any
   >(null);
+  const [myArticles, setMyArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [user] = useAuthState(auth);
+  const [lastArticleCreatedAt, setLastArticleCreatedAt] = useState<
+    number | null
+  >(null);
+  const [subscribed, setSubscribed] = useState(false);
 
   const PAGE_SIZE = 3;
 
-  useEffect(() => {
+  const fetchInitialArticles = async () => {
     setLoading(true);
     const articlesRef = collection(db, "Articles");
     const q = query(
@@ -60,6 +61,58 @@ const Articles: React.FC = () => {
       orderBy("createdAt", "desc"),
       limit(PAGE_SIZE)
     );
+
+    const querySnapshot = await getDocs(q);
+
+    const articlesInfo: Article[] = querySnapshot.docs.map(
+      (item: DocumentSnapshot<DocumentData>) => ({
+        ...(item.data() as Article),
+        id: item.id,
+      })
+    );
+
+    setMyArticles(articlesInfo);
+    const lastArticle = querySnapshot.docs[querySnapshot.docs.length - 1];
+    setLastArticleCreatedAt(lastArticle?.data().createdAt);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    setLoading(true);
+
+    fetchInitialArticles();
+  }, []);
+
+  const fetchNextPage = async () => {
+    if (!lastArticleCreatedAt) return;
+
+    const articlesRef = collection(db, "Articles");
+    const q = query(
+      articlesRef,
+      orderBy("createdAt", "desc"),
+      startAfter(lastArticleCreatedAt),
+      limit(PAGE_SIZE)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    const articlesInfo: Article[] = querySnapshot.docs.map(
+      (item: DocumentSnapshot<DocumentData>) => ({
+        ...(item.data() as Article),
+        id: item.id,
+      })
+    );
+
+    setMyArticles((prevArticles) => [...prevArticles, ...articlesInfo]);
+    const lastArticle = querySnapshot.docs[querySnapshot.docs.length - 1];
+    setLastArticleCreatedAt(lastArticle?.data().createdAt);
+  };
+
+  useEffect(() => {
+    if (!subscribed) return;
+
+    const articlesRef = collection(db, "Articles");
+    const q = query(articlesRef, orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const articlesInfo: Article[] = querySnapshot.docs.map(
@@ -71,41 +124,26 @@ const Articles: React.FC = () => {
       setMyArticles(articlesInfo);
       const lastArticle = querySnapshot.docs[querySnapshot.docs.length - 1];
       setLastArticleCreatedAt(lastArticle?.data().createdAt);
-      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [subscribed]);
 
-  const fetchNextPage = () => {
-    if (!lastArticleCreatedAt) return;
-
-    const articlesRef = collection(db, "Articles");
-    const q = query(
-      articlesRef,
-      orderBy("createdAt", "desc"),
-      startAfter(lastArticleCreatedAt),
-      limit(PAGE_SIZE)
-    );
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const articlesInfo: Article[] = querySnapshot.docs.map(
-        (item: DocumentSnapshot<DocumentData>) => ({
-          ...(item.data() as Article),
-          id: item.id,
-        })
-      );
-      setMyArticles((prevArticles) => [...prevArticles, ...articlesInfo]);
-      const lastArticle = querySnapshot.docs[querySnapshot.docs.length - 1];
-      setLastArticleCreatedAt(lastArticle?.data().createdAt);
-    });
-
-    return () => unsubscribe();
-  };
+  const filteredArticles = myArticles.filter((article) =>
+    article.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleDelete = async (id: string, image: string) => {
     try {
       await deleteDoc(doc(db, "Articles", id));
+      if (myArticles.length > PAGE_SIZE) {
+        const newArticles = [...myArticles].filter(
+          (article) => article.id !== id
+        );
+        setMyArticles(newArticles);
+      } else {
+        fetchInitialArticles();
+      }
       toast("Your Article deleted successfully", { type: "success" });
       const storageRef = ref(storage, image);
     } catch (error) {
@@ -115,11 +153,12 @@ const Articles: React.FC = () => {
   };
 
   if (loading) return <Loading />;
+
   return (
     <>
       <Container>
         <ArticlesList>
-          {myArticles.map(
+          {filteredArticles.map(
             ({
               id,
               title,
@@ -157,27 +196,27 @@ const Articles: React.FC = () => {
                   </ArticleComments>
                 </ArticleDetails>
                 <LikesContainer>
-                  {user && <LikeArticle id={id} likes={likes} />}
+                  {user && (
+                    <LikeArticle
+                      myArticles={myArticles}
+                      setMyArticles={setMyArticles}
+                      id={id}
+                      likes={likes}
+                    />
+                  )}
                 </LikesContainer>
               </ArticleContainer>
             )
           )}
         </ArticlesList>
         <AddNewArticleWrapper>
-          <AddNewArticle />
+          <AddNewArticle
+            myArticles={myArticles}
+            setMyArticles={setMyArticles}
+          />
         </AddNewArticleWrapper>
       </Container>
-      {myArticles.length === 0 ? (
-        <p>No more items</p>
-      ) : myArticles.length > PAGE_SIZE ? null : (
-        <ButtonContainer
-          className="btn btn-primary mb-3 mt-3 btn"
-          onClick={fetchNextPage}
-        >
-          Load More...
-          {loading && <span className="sr-only">Loading...</span>}
-        </ButtonContainer>
-      )}
+      {myArticles.length === 0 ? <p>No more items</p> : null}
       <Modal
         show={deleteArticle !== null}
         onHide={() => setDeleteArticle(null)}
@@ -200,6 +239,13 @@ const Articles: React.FC = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <ButtonContainer
+        className="btn btn-primary mb-3 mt-3 btn"
+        onClick={fetchNextPage}
+      >
+        Load More...
+        {loading && <span className="sr-only">Loading...</span>}
+      </ButtonContainer>
     </>
   );
 };

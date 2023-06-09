@@ -40,7 +40,7 @@ const Comments: React.FC<Props> = ({ articleId }) => {
     const docRef = doc(db, "Articles", articleId);
     onSnapshot(docRef, (snapshot) => {
       const data = snapshot.data() as CommentData;
-      setComments(data.comments);
+      setComments(data?.comments);
     });
   }, [articleId]);
 
